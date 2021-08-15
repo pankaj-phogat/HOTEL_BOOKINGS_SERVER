@@ -2,7 +2,7 @@ import express from 'express';
 import formidable from 'express-formidable';
 
 //controllers
-import { createHotel, deleteHotel, getHotels, getImage, getSellerHotels, readHotel, updateHotel } from '../controllers/hotel';
+import { createHotel, deleteHotel, getHotels, getImage, getSellerHotels, isAlreadyBooked, readHotel, updateHotel, userHotelBookings, searchListings } from '../controllers/hotel';
 
 //middlewares
 import { hotelOwner, requireSignIn } from '../middlewares';
@@ -16,5 +16,8 @@ router.delete('/delete-hotel/:hotelId',requireSignIn,hotelOwner,deleteHotel);
 router.get('/hotel/:hotelId',readHotel);
 router.put('/update-hotel/:hotelId',requireSignIn,hotelOwner,formidable(),updateHotel);
 
+router.get('/user-hotel-bookings',requireSignIn,userHotelBookings);
+router.get('/is-already-booked/:hotelId',requireSignIn, isAlreadyBooked);
+router.post('/search-listings',searchListings);
 
 module.exports=router;

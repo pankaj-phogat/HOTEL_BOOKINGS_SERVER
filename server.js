@@ -7,17 +7,16 @@ require('dotenv').config();
 
 
 //db connection
-mongoose.connect(process.env.DATABASE,{
+mongoose.connect(process.env.DATABASE_MONGO_ATLAS,{
     //use these otherwise you will get warnings
     useNewUrlParser : true,
-    useFindAndModify : false,
     useUnifiedTopology : true,
-    useCreateIndex : true
 })
 .then(() => {
     console.log('db connected');
 })
 .catch(err => console.log('db error : ',err));
+
 
 const app=express();
 

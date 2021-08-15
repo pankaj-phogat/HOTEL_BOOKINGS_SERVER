@@ -1,4 +1,5 @@
 import Hotel from "../models/hotel";
+import Order from '../models/order';
 import fs from 'fs';
 
 export const createHotel =async (req,res) => {
@@ -95,4 +96,52 @@ export const updateHotel= async (req,res) => {
         console.log(err);
         res.status(400).send('HOTEL UPDATE FAILED, TRY AGAIN');
     }
+}
+
+
+export const userHotelBookings= async (req,res) => {
+    const all= await Order.find({orderedBy : req.user._id})
+                    .select('session')
+                    .populate('hotel','-image.data')
+                    .populate('orderedBy','_id name')
+                    .exec();
+    res.json(all);
+}
+
+export const isAlreadyBooked= async (req,res) => {
+    const hotelId=req.params.hotelId;
+    //find orders of currently logged in user
+    const userOrders= await Order.find({ orderedBy : req.user._id})
+                            .select('hotel')
+                            .exec();
+    //check if hotelId is found in userOrders array
+    //if found ==> already booked
+    let ids=[];
+    for(let i=0;i<userOrders.length;i++){
+        ids.push(userOrders[i].hotel.toString());
+    }
+
+    res.json({
+        ok : ids.includes(hotelId)
+    })
+}
+
+
+export const searchListings=async (req,res) => {
+    const {location, date, bed}=req.body;
+    //console.log({location, date, bed});
+    // const fromDate=date.split(",");
+    //   toDate similar
+    let result=await Hotel.find({/*from : {$gte : new Date()},*/ location})
+                        .select('-image.data')
+                        .exec();
+    res.json(result);   
+    /* for more specific end date we can do something like this as well
+        let result= await Hotel.find({
+            from : {$gte : new Date()},
+            to : {$lte : to},
+            location,
+            bed
+        })
+    */
 }
